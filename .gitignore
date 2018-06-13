@@ -1,0 +1,7 @@
+.idea
+.project
+.pydevproject
+*.pyc
+*.mo
+.DS_Store
+
