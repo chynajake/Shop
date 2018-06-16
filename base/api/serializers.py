@@ -4,6 +4,7 @@ from base.models import Category, Product
 
 
 class ProductSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Product
         fields = '__all__'
@@ -18,4 +19,5 @@ class CategorySerializer(serializers.ModelSerializer):
 
     def get_products(self, obj):
         products = obj.product_set.all()
-        return ProductSerializer(products, many=True)
+        serializer = ProductSerializer(products, many=True)
+        return serializer.data

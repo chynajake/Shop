@@ -29,12 +29,12 @@ class CategoryView(APIView):
                 try:
                     reference = int(reference)
                 except ValueError, e:
-                    product = self.qs.filter(name=reference).last()
+                    category = self.qs.filter(name=reference).last()
                 else:
-                    product = self.qs.get(id=reference)
+                    category = self.qs.get(id=reference)
             except (Category.DoesNotExist, TypeError):
                 return Response(self.messages[1], status=status.HTTP_400_BAD_REQUEST)
-            serializer = self.serializer_class(product)
+            serializer = self.serializer_class(category)
         else:
             serializer = self.serializer_class(self.qs.all(), many=True)
         return Response(serializer.data)
@@ -86,12 +86,13 @@ class CategoryView(APIView):
                 return Response(self.messages[1], status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(self.messages[4], status=status.HTTP_400_BAD_REQUEST)
-        return Response(self.serializer_class(self.instance))
+        data = self.serializer_class(self.instance).data
+        return Response(data)
 
 
 class ProductView(APIView):
     permission_classes = (AllowAny,)
-    serializer_class = CategorySerializer
+    serializer_class = ProductSerializer
     messages = {
         1: {'message': 'Product reference error', 'message_header': 'Error', 'error': True},
         2: {'message': 'Wrong action', 'message_header': 'Error', 'error': True},
@@ -164,7 +165,7 @@ class ProductView(APIView):
         if action == self.actions[0]:
             product = self.qs.create(name=name, category=category,
                                       creator=user, description=description,
-                                      base_fare=base_fare, margin=margin)
+                                      base_fare=int(base_fare), margin=int(margin), total_fare=int(base_fare)+int(margin))
             self.instance = product
         elif action == self.actions[1]:
             if product:
@@ -200,4 +201,4 @@ class ProductView(APIView):
             qs.delete()
         else:
             return Response(self.messages[4], status=status.HTTP_400_BAD_REQUEST)
-        return Response(self.serializer_class(self.instance))
+        return Response(self.serializer_class(self.instance).data)
