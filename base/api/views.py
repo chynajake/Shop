@@ -8,6 +8,8 @@ from rest_framework import parsers, viewsets, status, filters
 from base.api.serializers import CategorySerializer, ProductSerializer
 from base.models import Category, Product
 
+import dgis
+
 
 class CategoryView(APIView):
     permission_classes = (AllowAny,)
@@ -202,3 +204,12 @@ class ProductView(APIView):
         else:
             return Response(self.messages[4], status=status.HTTP_400_BAD_REQUEST)
         return Response(self.serializer_class(self.instance).data)
+
+
+class Dgis(APIView):
+    permission_classes = (AllowAny, )
+
+    def get(self, request, *args, **kwargs):
+        api = dgis.API('rutnpt3272')
+        magnums = api.search(what='Magnum', where=u'Алматы')
+        return magnums
